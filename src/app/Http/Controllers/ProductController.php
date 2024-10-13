@@ -12,18 +12,32 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $sort = $request->input('sort', 'asc');
+        $search = $request->input('search'); // 検索条件の取得
+        $sort = $request->input('sort');     // 並び替え条件の取得
 
-        // 検索条件と並び替え条件を適用
-        $products = Product::when($search, function ($query, $search) {
-                return $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->orderBy('price', $sort)
-            ->paginate(6);
+        // 商品のクエリビルダを開始
+        $query = Product::query();
 
-        return view('index', compact('products'));
-    }
+        // 検索条件を適用
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // 並び替え条件を適用
+        if ($sort === 'asc' || $sort === 'desc') {
+            $query->orderBy('price', $sort);
+        } else {
+            // 並び替え指定がない場合はID順にする
+            $query->orderBy('id', 'asc');
+        }
+
+        // ページネーションの取得
+        $products = $query->paginate(6);
+
+        // ビューにproductsとsortを渡す
+        return view('index', compact('products', 'sort'));
+}
+
 
     // 商品詳細画面を表示する
     public function show(Product $product)

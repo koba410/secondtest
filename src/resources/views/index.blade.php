@@ -12,6 +12,7 @@
 
             <label for="sort" class="form-label">価格順で表示</label>
             <select id="sort" class="form-select mb-3" onchange="applySort(this.value)">
+                <option value="" disabled selected>価格で並び替え</option> <!-- プレースホルダーとして機能 -->
                 <option value="{{ route('products.index', ['sort' => 'asc', 'search' => request('search')]) }}"
                     {{ request('sort') == 'asc' ? 'selected' : '' }}>安い順</option>
                 <option value="{{ route('products.index', ['sort' => 'desc', 'search' => request('search')]) }}"
@@ -23,6 +24,18 @@
                     location.href = url;
                 }
             </script>
+
+            {{-- タグ表示 --}}
+            @if (request('sort'))
+                <div class="mb-3">
+                    <span class="badge bg-warning text-dark">
+                        {{ request('sort') == 'asc' ? '低い順に表示' : '高い順に表示' }}
+                        <a href="{{ route('products.index') }}" class="text-dark ms-2" style="text-decoration: none;">
+                            &times;
+                        </a>
+                    </span>
+                </div>
+            @endif
 
         </div>
 
